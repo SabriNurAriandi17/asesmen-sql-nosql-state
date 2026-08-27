@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asesmen · Manajemen State SQL + NoSQL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__mark">◧◨</span>
+      <div>
+        <h1>State Ledger</h1>
+        <p>Sub‑CPMK‑3.3 — SQL &amp; NoSQL Client‑side State Management</p>
+      </div>
+    </div>
+
+    <div class="topbar__status" id="connStatus">
+      <span class="dot dot--offline" id="connDot"></span>
+      <span id="connLabel">Memeriksa koneksi…</span>
+    </div>
+
+    <div class="topbar__actions">
+      <label class="switch" title="Tersimpan di LocalStorage">
+        <input type="checkbox" id="themeToggle" />
+        <span>Tema Gelap</span>
+      </label>
+      <button id="syncBtn" class="btn btn--sync">
+        <span class="sync-icon">⟳</span> Sinkronkan
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ STORAGE INSPECTOR (signature element) ============ -->
+  <section class="inspector">
+    <article class="storage-card storage-card--sql">
+      <header>
+        <h2>SQL <small>(server · SQLite)</small></h2>
+        <span class="badge">source of truth</span>
+      </header>
+      <p class="storage-card__desc">Data relasional. Semua operasi CRUD final divalidasi &amp; disimpan di sini via REST API.</p>
+      <div class="storage-card__stat">
+        <span id="sqlCount">–</span> baris aktif
+      </div>
+      <div class="storage-card__meta" id="sqlMeta">menunggu koneksi…</div>
+    </article>
+
+    <article class="storage-card storage-card--indexeddb">
+      <header>
+        <h2>IndexedDB <small>(client · NoSQL)</small></h2>
+        <span class="badge">cache offline</span>
+      </header>
+      <p class="storage-card__desc">Object store berbasis dokumen JSON. Menyimpan salinan tugas + antrean operasi saat offline.</p>
+      <div class="storage-card__stat">
+        <span id="idbCount">–</span> dokumen tersimpan
+      </div>
+      <div class="storage-card__meta" id="idbMeta">antrean sinkron: <span id="pendingCount">0</span></div>
+    </article>
+
+    <article class="storage-card storage-card--localstorage">
+      <header>
+        <h2>LocalStorage <small>(client · state UI)</small></h2>
+        <span class="badge">preferensi</span>
+      </header>
+      <p class="storage-card__desc">Key‑value sederhana untuk state non‑kritis: tema, filter aktif, waktu sinkron terakhir.</p>
+      <pre class="storage-card__code" id="lsPreview">{}</pre>
+    </article>
+  </section>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <!-- Form + List -->
+    <section class="panel panel--tasks">
+      <form id="taskForm" class="task-form">
+        <input type="hidden" id="taskId" />
+        <div class="task-form__row">
+          <input type="text" id="taskTitle" placeholder="Judul tugas…" required maxlength="120" />
+          <select id="taskPriority">
+            <option value="low">Prioritas rendah</option>
+            <option value="normal" selected>Prioritas normal</option>
+            <option value="high">Prioritas tinggi</option>
+          </select>
+        </div>
+        <textarea id="taskDesc" placeholder="Deskripsi (opsional)" rows="2" maxlength="500"></textarea>
+        <div class="task-form__row task-form__row--end">
+          <button type="button" id="cancelEditBtn" class="btn btn--ghost" hidden>Batal edit</button>
+          <button type="submit" class="btn btn--primary" id="submitBtn">+ Tambah Tugas</button>
+        </div>
+      </form>
+
+      <div class="filter-bar">
+        <div class="filter-bar__tabs" id="filterTabs">
+          <button class="chip is-active" data-filter="all">Semua</button>
+          <button class="chip" data-filter="todo">Belum</button>
+          <button class="chip" data-filter="doing">Berjalan</button>
+          <button class="chip" data-filter="done">Selesai</button>
+        </div>
+        <span class="filter-bar__hint">filter tersimpan di LocalStorage</span>
+      </div>
+
+      <ul id="taskList" class="task-list"></ul>
+      <p id="emptyState" class="empty-state" hidden>Belum ada tugas. Tambahkan satu di atas ⬆</p>
+    </section>
+
+    <!-- Sync log -->
+    <aside class="panel panel--log">
+      <h2>Log Sinkronisasi</h2>
+      <p class="panel__sub">Riwayat proses sync antara IndexedDB (client) dan SQL (server).</p>
+      <div id="syncLog" class="sync-log"></div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    Proyek Asesmen · Client‑side State Management (SQL + NoSQL) · Bloom C3
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
